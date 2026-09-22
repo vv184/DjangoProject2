@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Недвижимость</title>
+</head>
+<body>
+
+<h1>Система аренды недвижимости</h1>
+
+{% if user.is_authenticated %}
+
+    <h2>Добро пожаловать, {{ user.username }}!</h2>
+
+    <p>
+        Ваша роль:
+        <strong>{{ user.get_role_display }}</strong>
+    </p>
+
+    <p>
+        <a href="{% url 'logout' %}">Выйти</a>
+    </p>
+
+{% else %}
+
+    <p>
+        <a href="{% url 'login' %}">Войти</a>
+    </p>
+
+    <p>
+        <a href="{% url 'register' %}">Зарегистрироваться</a>
+    </p>
+
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Объявления</title>
+</head>
+<body>
+
+<h1>Объявления о недвижимости</h1>
+
+<form method="get">
+
+    <p>
+        <label>Поиск:</label>
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Заголовок или описание"
+        >
+    </p>
+
+    <p>
+        <label>Цена от:</label>
+        <input
+            type="number"
+            name="min_price"
+            value="{{ min_price }}"
+        >
+
+        <label>до:</label>
+        <input
+            type="number"
+            name="max_price"
+            value="{{ max_price }}"
+        >
+    </p>
+
+    <p>
+        <label>Город или район:</label>
+        <input
+            type="text"
+            name="location"
+            value="{{ location }}"
+            placeholder="Например, Berlin"
+        >
+    </p>
+
+    <p>
+        <label>Комнат от:</label>
+        <input
+            type="number"
+            name="min_rooms"
+            value="{{ min_rooms }}"
+        >
+
+        <label>до:</label>
+        <input
+            type="number"
+            name="max_rooms"
+            value="{{ max_rooms }}"
+        >
+    </p>
+
+    <p>
+        <label>Тип жилья:</label>
+
+        <select name="property_type">
+            <option value="">Все типы</option>
+            <option value="apartment"
+                {% if property_type == 'apartment' %}selected{% endif %}>
+                Квартира
+            </option>
+
+            <option value="house"
+                {% if property_type == 'house' %}selected{% endif %}>
+                Дом
+            </option>
+
+            <option value="studio"
+                {% if property_type == 'studio' %}selected{% endif %}>
+                Студия
+            </option>
+
+            <option value="room"
+                {% if property_type == 'room' %}selected{% endif %}>
+                Комната
+            </option>
+
+        </select>
+    </p>
+
+    <p>
+        <label>Сортировка:</label>
+
+        <select name="sort">
+            <option value="newest"
+                {% if sort == 'newest' %}selected{% endif %}>
+                Сначала новые
+            </option>
+
+            <option value="oldest"
+                {% if sort == 'oldest' %}selected{% endif %}>
+                Сначала старые
+            </option>
+
+            <option value="price_asc"
+                {% if sort == 'price_asc' %}selected{% endif %}>
+                Цена: по возрастанию
+            </option>
+
+            <option value="price_desc"
+                {% if sort == 'price_desc' %}selected{% endif %}>
+                Цена: по убыванию
+            </option>
+        </select>
+    </p>
+
+    <button type="submit">Найти</button>
+
+    <a href="{% url 'property_list' %}">
+        Сбросить фильтры
+    </a>
+
+</form>
+
+<hr>
+
+{% if user.is_authenticated and user.role == 'landlord' %}
+    <p>
+        <a href="{% url 'create_property' %}">
+            Добавить объявление
+        </a>
+    </p>
+{% endif %}
+
+{% if properties %}
+
+    {% for property in properties %}
+
+        <div>
+            <h2>{{ property.title }}</h2>
+
+            <p>{{ property.description }}</p>
+
+            <p>📍 {{ property.location }}</p>
+
+            <p>💰 {{ property.price }} €</p>
+
+            <p>🏠 {{ property.get_property_type_display }}</p>
+
+            <p>Комнат: {{ property.rooms }}</p>
+
+            <p>Добавлено: {{ property.created_at }}</p>
+
+{% if user.is_authenticated and user == property.owner %}
+
+    <p>
+        <a href="{% url 'edit_property' property.id %}">
+            Редактировать
+        </a>
+
+        <a href="{% url 'delete_property' property.id %}">
+            Удалить
+        </a>
+
+        <a href="{% url 'toggle_property' property.id %}">
+            Скрыть объявление
+        </a>
+    </p>
+
+{% endif %}
+
+        </div>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>Пока нет активных объявлений.</p>
+
+{% endif %}
+
+<p>
+    <a href="{% url 'home' %}">На главную</a>
+</p>
+
+</body>
+</html>
